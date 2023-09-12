@@ -18,6 +18,7 @@ function App() {
           <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }} />
           <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ title: "Home Page" }} />
           <Stack.Screen name="DetailScreen" component={DetailScreen} options={{ title: "Detail Page" }} />
+          
         </Stack.Navigator>
       </NavigationContainer>
       <Text style={{ fontSize: 40 }}>Global text</Text>
