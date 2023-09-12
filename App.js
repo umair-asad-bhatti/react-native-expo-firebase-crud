@@ -18,6 +18,7 @@ function App() {
           <Stack.Screen name="Detail" component={Detail} options={{ title: "Detail Page" }} />
         </Stack.Navigator>
       </NavigationContainer>
+       <Text style={{fontSize:40}}>Global text</Text>
     </>
   );
 }
