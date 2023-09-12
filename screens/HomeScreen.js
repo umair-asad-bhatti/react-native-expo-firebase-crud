@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View, Button } from 'react-native'
 import React from 'react'
 
-const Home = ({ navigation }) => {
+const HomeScreen = ({ navigation }) => {
 
     const goToDetailPage = () => {
-        navigation.navigate("Detail", { 'name': "umair asad" })
+        navigation.navigate("DetailScreen", { 'name': "umair asad" })
     }
     return (
         <View style={styles.container}>
@@ -13,8 +13,6 @@ const Home = ({ navigation }) => {
         </View>
     )
 }
-
-export default Home
 
 const styles = StyleSheet.create({
     container: {
@@ -26,3 +24,4 @@ const styles = StyleSheet.create({
         fontSize: 40
     }
 })
+export default HomeScreen
