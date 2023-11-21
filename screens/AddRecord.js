@@ -1,44 +1,39 @@
-import { View, Text, StyleSheet, TextInput, Button } from 'react-native'
-import { doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
-import React, { useEffect, useState } from 'react'
-import { db } from '../firebase/firebase'
-const DetailScreen = ({ route, navigation }) => {
-    const { id } = route.params
-    const [data, setData] = useState({})
+import { Alert, Button, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 
-
-    //inputs
+import React, { useState } from 'react';
+import { app, db } from '../firebase/firebase'
+import { addDoc, doc, collection } from 'firebase/firestore';
+export default function AddRecord({ navigation }) {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [age, setAge] = useState('');
     const [contactNumber, setContactNumber] = useState('');
-    useEffect(() => {
-        const getDetails = async () => {
-            const docRef = doc(db, "usersData", id)
-            const res = await getDoc(docRef)
-            return res.data()
-        }
-        getDetails().then((res) => setData(res))
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
-    }, [id])
-    useEffect(() => {
-        setUsername(data.username)
-        setEmail(data.email)
-        setAge(data.age)
-        setContactNumber(data.contactNumber)
-    }, [data])
-    const handleEdit = () => {
-        const editData = async () => {
-            await setDoc(doc(db, "usersData", id), {
-                username, email, contactNumber, age
+    const handleSubmit = async () => {
+        // Handle form submission logic here
+        setIsSubmitting(true)
+        try {
+            await addDoc(collection(db, "usersData"), {
+                username, email, age, contactNumber
             })
+            Alert.alert("App", 'Record Added', [
+                {
+                    text: 'Go back to dashboard',
+                    onPress: () => navigation.navigate("HomeScreen")
+                },
+                {
+                    text: 'Ok',
+                    onPress: () => null
+                }
+            ])
+        } catch (error) {
+            Alert.alert("Error from addRecord Screen!", error)
         }
-        editData().then(() => navigation.navigate("HomeScreen"))
-    }
-    const handleDelete = async () => {
-        deleteDoc(doc(db, "usersData", id))
-        navigation.navigate("HomeScreen")
-    }
+        setIsSubmitting(false)
+
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.label}>Username:</Text>
@@ -75,11 +70,8 @@ const DetailScreen = ({ route, navigation }) => {
                 placeholder="Enter your contact number"
                 keyboardType="phone-pad"
             />
-            <Button title={'edit'} onPress={handleEdit} />
-            <View style={{ marginTop: 20 }}>
 
-                <Button color={'red'} title={'delete'} onPress={handleDelete} />
-            </View>
+            <Button title={isSubmitting ? 'submitting...' : 'Submit'} onPress={!isSubmitting && handleSubmit} />
         </View>
     );
 }
@@ -103,4 +95,3 @@ const styles = StyleSheet.create({
         padding: 8,
     },
 });
-export default DetailScreen

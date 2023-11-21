@@ -1,15 +1,39 @@
-import { StyleSheet, Text, View, Button } from 'react-native'
-import React from 'react'
-
+import { StyleSheet, FlatList, View, Button, Text, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { useFocusEffect } from '@react-navigation/native'
+import { onSnapshot, collection, getDocs, setDoc, doc } from 'firebase/firestore'
+import { db } from '../firebase/firebase'
 const HomeScreen = ({ navigation }) => {
+    const [usersData, setUsersData] = useState([])
+    useEffect(() => {
+        onSnapshot(collection(db, "usersData"), (docs) => {
+            let data = []
+            docs?.forEach(doc => data.push({ ...doc.data(), id: doc.id }))
+            setUsersData(data)
+        });
+    }, [])
 
-    const goToDetailPage = () => {
-        navigation.navigate("DetailScreen", { 'name': "umair asad" })
+    const goToAddRecordScreen = () => {
+        navigation.navigate("AddRecord")
     }
     return (
         <View style={styles.container}>
-            <Text style={styles.homeText}>Home</Text>
-            <Button onPress={goToDetailPage} title='Detail page'></Button>
+            <FlatList
+                data={usersData}
+                renderItem={({ item }) => {
+                    return (
+                        <TouchableOpacity onPress={() => navigation.navigate("DetailScreen", { id: item.id })}>
+                            <ScrollView key={item.id} horizontal={true} showsHorizontalScrollIndicator={false}>
+                                <Text style={{ padding: 10 }}>{item.username}</Text>
+                                <Text style={{ padding: 10 }}>{item.email}</Text>
+                                <Text style={{ padding: 10 }}>{item.age}</Text>
+                                <Text style={{ padding: 10 }}>{item.contactNumber}</Text>
+                            </ScrollView >
+                        </TouchableOpacity>
+                    )
+                }}
+            />
+            <Button onPress={goToAddRecordScreen} title='Add record' />
         </View>
     )
 }
@@ -17,11 +41,8 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
+        padding: 20
     },
-    homeText: {
-        fontSize: 40
-    }
+
 })
 export default HomeScreen
